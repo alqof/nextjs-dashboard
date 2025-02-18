@@ -1,12 +1,32 @@
 import { inter, lusitana } from '@/app/ui/fonts';
+import { Card } from '@/app/ui/dashboard/cards';
+import RevenueChart from '@/app/ui/dashboard/revenue-chart';
+import LatestInvoices from '@/app/ui/dashboard/latest-invoices';
+import { fetchRevenue } from '@/app/lib/data';
 
-export default function Page(){
+
+export default async function Page(){
+    const revenue = await fetchRevenue();
+    console.log(revenue)
+
     return (
-        <div className="px-3 py-4 md:px-2">
-            <div className="rounded-md bg-gray-50">
-                <h1 className={`mb-4 font-bold ${lusitana.className} text-xl md:text-3xl`}> Dashboard </h1>
-                <p> Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores dicta minima neque? Asperiores iusto excepturi omnis est voluptas perspiciatis at magni tempora quia, rem recusandae molestiae, consectetur exercitationem commodi enim quaerat quasi nesciunt? Illo vel dolor eius, distinctio tempore ab dolores maiores amet odit fugit aliquid aut, minus officiis adipisci excepturi culpa deserunt laudantium delectus ut blanditiis temporibus. Praesentium sint, fugit eum consectetur, velit rem earum explicabo ipsa, porro est eveniet laudantium. Beatae commodi minima porro perspiciatis ea dolorum, omnis voluptatum blanditiis, exercitationem adipisci iste. Ea autem fugiat distinctio fuga id excepturi iure sed, dolorem omnis velit totam. Enim, corporis!</p>
+        <main>
+            <h1 className={`mb-3 font-bold ${lusitana.className} text-xl md:text-3xl`}> Dashboard </h1>
+            
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {/* <Card title="Collected" value={totalPaidInvoices} type="collected" /> */}
+                {/* <Card title="Pending" value={totalPendingInvoices} type="pending" /> */}
+                {/* <Card title="Total Invoices" value={numberOfInvoices} type="invoices" /> */}
+                {/* <Card
+                title="Total Customers"
+                value={numberOfCustomers}
+                type="customers"
+                /> */}
             </div>
-        </div>
+            <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
+                <RevenueChart revenue={revenue}  />
+                {/* <LatestInvoices latestInvoices={latestInvoices} /> */}
+            </div>
+        </main>
     );
 }
