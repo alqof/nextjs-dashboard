@@ -37,11 +37,11 @@ export async function fetchLatestInvoices() {
       FROM invoices
       JOIN customers ON invoices.customer_id = customers.id
       ORDER BY invoices.date DESC
-      LIMIT 5`;
+      LIMIT 5
+    `;
 
     const latestInvoices = data.map((invoice) => ({
-      ...invoice,
-      amount: formatCurrency(invoice.amount),
+      ...invoice, amount: formatCurrency(invoice.amount)
     }));
     return latestInvoices;
   } catch (error) {
@@ -57,11 +57,16 @@ export async function fetchCardData() {
     // how to initialize multiple queries in parallel with JS.
     const invoiceCountPromise = sql`SELECT COUNT(*) FROM invoices`;
     const customerCountPromise = sql`SELECT COUNT(*) FROM customers`;
-    const invoiceStatusPromise = sql`SELECT
-         SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS "paid",
-         SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
-         FROM invoices`;
+    const invoiceStatusPromise = sql`
+      SELECT
+        SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS "paid",
+        SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
+      FROM invoices
+    `;
 
+    // Waterfall -> Parallel data fetching 
+    // Start executing all data fetches at the same time
+    // *NOT Sequential
     const data = await Promise.all([
       invoiceCountPromise,
       customerCountPromise,
