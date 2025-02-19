@@ -11,45 +11,6 @@ import { formatCurrency } from './utils';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
-export async function fetchRevenue() {
-  try {
-    // Artificially delay a response for demo purposes.
-    // Don't do this in production :)
-
-    // console.log('Fetching revenue data...');
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
-
-    const data = await sql<Revenue[]>`SELECT * FROM revenue`;
-
-    // console.log('Data fetch completed after 3 seconds.');
-
-    return data;
-  } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch revenue data.');
-  }
-}
-
-export async function fetchLatestInvoices() {
-  try {
-    const data = await sql<LatestInvoiceRaw[]>`
-      SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
-      FROM invoices
-      JOIN customers ON invoices.customer_id = customers.id
-      ORDER BY invoices.date DESC
-      LIMIT 5
-    `;
-
-    const latestInvoices = data.map((invoice) => ({
-      ...invoice, amount: formatCurrency(invoice.amount)
-    }));
-    return latestInvoices;
-  } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch the latest invoices.');
-  }
-}
-
 export async function fetchCardData() {
   try {
     // You can probably combine these into a single SQL query
@@ -65,13 +26,17 @@ export async function fetchCardData() {
     `;
 
     // Waterfall -> Parallel data fetching 
-    // Start executing all data fetches at the same time
-    // *NOT Sequential
+    // Start executing all data fetches at the same time *NOT Sequential
+
+    // *Artificially delay a response for demo purposes -> Don't do this in production :)
+    console.log('Fetching Card data...');
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     const data = await Promise.all([
       invoiceCountPromise,
       customerCountPromise,
       invoiceStatusPromise,
     ]);
+    console.log('Data fetch Card completed after 1 seconds.');
 
     const numberOfInvoices = Number(data[0][0].count ?? '0');
     const numberOfCustomers = Number(data[1][0].count ?? '0');
@@ -87,6 +52,45 @@ export async function fetchCardData() {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch card data.');
+  }
+}
+
+export async function fetchRevenue() {
+  try {
+    // *Artificially delay a response for demo purposes -> Don't do this in production :)
+    console.log('Fetching Revenue data...');
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    const data = await sql<Revenue[]>`SELECT * FROM revenue`;
+    console.log('Data fetch Revenue completed after 2 seconds.');
+
+    return data;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch revenue data.');
+  }
+}
+
+export async function fetchLatestInvoices() {
+  try {
+    // *Artificially delay a response for demo purposes -> Don't do this in production :)
+    console.log('Fetching Latest Invoices data...');
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    const data = await sql<LatestInvoiceRaw[]>`
+      SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
+      FROM invoices
+      JOIN customers ON invoices.customer_id = customers.id
+      ORDER BY invoices.date DESC
+      LIMIT 5
+    `;
+    console.log('Data Latest Invoices completed after 3 seconds.');
+
+    const latestInvoices = data.map((invoice) => ({
+      ...invoice, amount: formatCurrency(invoice.amount)
+    }));
+    return latestInvoices;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch the latest invoices.');
   }
 }
 
