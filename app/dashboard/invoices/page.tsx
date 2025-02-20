@@ -1,11 +1,34 @@
-import { inter, lusitana } from '@/app/ui/fonts';
+import { Suspense } from 'react';
+import { lusitana } from '@/app/ui/fonts';
+import Search from '@/app/ui/search';
+import Table from '@/app/ui/invoices/table';
+import Pagination from '@/app/ui/invoices/pagination';
+import { CreateInvoice } from '@/app/ui/invoices/buttons';
+import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
+import { fetchInvoicesPages } from '@/app/lib/data';
+ 
+export default async function Page(props: {searchParams?: Promise<{query?: string; page?: string}>}){
+    const searchParams = await props.searchParams;
+    const query = searchParams?.query || '';
+    const currentPage = Number(searchParams?.page) || 1;
+    const totalPages = await fetchInvoicesPages(query);
 
-export default function Page(){
+
     return (
-        <div className="px-3 py-4 md:px-2">
-            <div className="rounded-md bg-gray-50">
-                <h1 className={`mb-4 font-bold ${lusitana.className} text-xl md:text-3xl`}> Invoices </h1>
-                <p> Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores dicta minima neque? Asperiores iusto excepturi omnis est voluptas perspiciatis at magni tempora quia, rem recusandae molestiae, consectetur exercitationem commodi enim quaerat quasi nesciunt? Illo vel dolor eius, distinctio tempore ab dolores maiores amet odit fugit aliquid aut, minus officiis adipisci excepturi culpa deserunt laudantium delectus ut blanditiis temporibus. Praesentium sint, fugit eum consectetur, velit rem earum explicabo ipsa, porro est eveniet laudantium. Beatae commodi minima porro perspiciatis ea dolorum, omnis voluptatum blanditiis, exercitationem adipisci iste. Ea autem fugiat distinctio fuga id excepturi iure sed, dolorem omnis velit totam. Enim, corporis!</p>
+        <div className="w-full">
+            <h1 className={`mb-3 font-bold ${lusitana.className} text-xl md:text-3xl`}> Invoices </h1>
+
+            <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
+                <Search placeholder="Search invoices..." />
+                <CreateInvoice />
+            </div>
+
+            <Suspense key={query+currentPage} fallback={<InvoicesTableSkeleton />}>
+                <Table query={query} currentPage={currentPage} />
+            </Suspense>
+
+            <div className="mt-5 flex w-full justify-center">
+                <Pagination totalPages={totalPages} />
             </div>
         </div>
     );
