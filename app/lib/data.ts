@@ -9,6 +9,7 @@ import {
 } from './definitions';
 import { formatCurrency } from './utils';
 
+
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 export async function fetchCardData() {
@@ -94,6 +95,7 @@ export async function fetchLatestInvoices() {
   }
 }
 
+
 const ITEMS_PER_PAGE = 10;
 export async function fetchFilteredInvoices(
   query: string,
@@ -119,7 +121,10 @@ export async function fetchFilteredInvoices(
         invoices.amount::text ILIKE ${`%${query}%`} OR
         invoices.date::text ILIKE ${`%${query}%`} OR
         invoices.status ILIKE ${`%${query}%`}
-      ORDER BY invoices.date DESC
+      ORDER BY 
+        customers.name ASC,
+        invoices.date ASC,
+        invoices.status ASC
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     `;
 
@@ -175,6 +180,7 @@ export async function fetchInvoiceById(id: string) {
     throw new Error('Failed to fetch invoice.');
   }
 }
+
 
 export async function fetchCustomers() {
   try {

@@ -18,7 +18,7 @@ export default async function Page(props: {searchParams?: Promise<{query?: strin
         <div className="w-full">
             <h1 className={`mb-3 font-bold ${lusitana.className} text-xl md:text-3xl`}> Invoices </h1>
 
-            <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
+            <div className="flex items-center justify-between gap-2 mt-4 md:mt-8">
                 <Search placeholder="Search invoices..." />
                 <CreateInvoice />
             </div>
