@@ -18,40 +18,44 @@ const FormSchema = z.object({
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
 
 export async function createInvoice(formData: FormData){
-    // ===> You'll notice that amount is of type string and not number. 
-    // ===> This is because input elements with type="number" actually return a string, not a number!
-    // const rawFormData = {
-    //     customerId: formData.get('customerId'),
-    //     amount: formData.get('amount'),
-    //     status: formData.get('status'),
-    // };
-    // console.log(rawFormData);
-    // console.log(typeof rawFormData.customerId);
-    // console.log(typeof rawFormData.amount);
-    // console.log(typeof rawFormData.status);
+  // ===> You'll notice that amount is of type string and not number. 
+  // ===> This is because input elements with type="number" actually return a string, not a number!
+  // const rawFormData = {
+  //     customerId: formData.get('customerId'),
+  //     amount: formData.get('amount'),
+  //     status: formData.get('status'),
+  // };
+  // console.log(rawFormData);
+  // console.log(typeof rawFormData.customerId);
+  // console.log(typeof rawFormData.amount);
+  // console.log(typeof rawFormData.status);
 
 
 
-    // ===> using zod
-    // validating and ensure it's in the correct format and with the correct types.
-    const { customerId, amount, status } = CreateInvoice.parse({
-        customerId: formData.get('customerId'),
-        amount: formData.get('amount'),
-        status: formData.get('status'),
-    });
-    const amountInCents = amount * 100; // it means store monetary values in cents($4.02) in your database to eliminate JavaScript floating-point errors and ensure greater accuracy.
-    const date = new Date().toISOString().split('T')[0];
-    // console.log(typeof customerId);
-    // console.log(typeof amount);
-    // console.log(typeof status);
+  // ===> using zod
+  // validating and ensure it's in the correct format and with the correct types.
+  const { customerId, amount, status } = CreateInvoice.parse({
+      customerId: formData.get('customerId'),
+      amount: formData.get('amount'),
+      status: formData.get('status'),
+  });
+  const amountInCents = amount * 100; // it means store monetary values in cents($4.02) in your database to eliminate JavaScript floating-point errors and ensure greater accuracy.
+  const date = new Date().toISOString().split('T')[0];
+  // console.log(typeof customerId);
+  // console.log(typeof amount);
+  // console.log(typeof status);
 
+  try {
     await sql`
-        INSERT INTO invoices (customer_id, amount, status, date)
-        VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
+      INSERT INTO invoices (customer_id, amount, status, date)
+      VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
     `;
-    
-    revalidatePath('/dashboard/invoices');
-    redirect('/dashboard/invoices');
+  } catch (error) {
+    console.error(error);
+  }
+  
+  revalidatePath('/dashboard/invoices');
+  redirect('/dashboard/invoices');
 }
 
 
@@ -66,19 +70,32 @@ export async function updateInvoice(id: string, formData: FormData) {
   });
   const amountInCents = amount * 100;
  
-  await sql`
-    UPDATE invoices
-    SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
-    WHERE id = ${id}
-  `;
- 
+  try {
+    await sql`
+        UPDATE invoices
+        SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
+        WHERE id = ${id}
+      `;
+  } catch (error) {
+    // console.error(error);
+    throw new Error('Failed to Update Invoice');
+  }
+
   revalidatePath('/dashboard/invoices');
   redirect('/dashboard/invoices');
 }
 
 
 export async function deleteInvoice(id: string) {
+  // throw new Error('Failed to Delete Invoice');
+
+  try {
     await sql`DELETE FROM invoices WHERE id = ${id}`;
     revalidatePath('/dashboard/invoices');
+  } catch (error) {
+    throw new Error('Failed to Delete Invoice');
   }
-  
+}
+
+
+

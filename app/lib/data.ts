@@ -8,6 +8,7 @@ import {
   Revenue,
 } from './definitions';
 import { formatCurrency } from './utils';
+import { notFound } from 'next/navigation';
 
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
@@ -96,6 +97,7 @@ export async function fetchLatestInvoices() {
 }
 
 
+
 const ITEMS_PER_PAGE = 10;
 export async function fetchFilteredInvoices(
   query: string,
@@ -170,16 +172,18 @@ export async function fetchInvoiceById(id: string) {
 
     const invoice = data.map((invoice) => ({
       ...invoice,
-      // Convert amount from cents to dollars
-      amount: invoice.amount / 100,
+      amount: invoice.amount / 100, // Convert amount from cents to dollars
     }));
 
+    // console.log(invoice);
     return invoice[0];
   } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch invoice.');
+    // console.error('Database Error:', error);
+    // throw new Error('Failed to fetch invoice.');
+    notFound();
   }
 }
+
 
 
 export async function fetchCustomers() {
