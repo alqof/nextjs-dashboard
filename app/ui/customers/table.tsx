@@ -2,6 +2,11 @@ import Image from 'next/image';
 import { FormattedSummaryCustomersTable } from '@/app/lib/definitions';
 
 export default async function CustomersTable({customers}: {customers: FormattedSummaryCustomersTable[]}){
+  // if (!customers || customers.length === 0) {
+  //   console.log(customers)
+  //   // return <p>Data pelanggan tidak tersedia.</p>;
+  // }
+
   return (
     <div className="mt-6 flow-root">
       <div className="overflow-x-auto">
