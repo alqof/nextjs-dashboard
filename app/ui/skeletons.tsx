@@ -38,7 +38,7 @@ export function CardSkeleton() {
   );
 }
 
-export function CardsSkeleton() {
+export function WrapCardSkeleton() {
   return (
     <>
       <CardSkeleton />
@@ -48,6 +48,7 @@ export function CardsSkeleton() {
     </>
   );
 }
+
 
 
 export function RevenueChartSkeleton() {
@@ -66,6 +67,7 @@ export function RevenueChartSkeleton() {
     </div>
   );
 }
+
 
 
 export function InvoiceSkeleton() {

@@ -1,12 +1,25 @@
+import { Metadata } from 'next';
 import { lusitana } from '@/app/ui/fonts';
+import Search from '@/app/ui/search';
+import CustomersTable from '@/app/ui/customers/table';
+import { fetchSummaryCustomers } from '@/app/lib/data';
 
-export default function Page(){
+
+export const metadata: Metadata = {
+    title: 'Acme Dashboard | Customers',
+};
+
+export default async function Page(){
+    const customers = await fetchSummaryCustomers();
+
     return (
-        <div className="px-3 py-4 md:px-2">
-            <div className="rounded-md bg-gray-50">
-                <h1 className={`mb-4 font-bold ${lusitana.className} text-xl md:text-3xl`}> Customers </h1>
-                <p> Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores dicta minima neque? Asperiores iusto excepturi omnis est voluptas perspiciatis at magni tempora quia, rem recusandae molestiae, consectetur exercitationem commodi enim quaerat quasi nesciunt? Illo vel dolor eius, distinctio tempore ab dolores maiores amet odit fugit aliquid aut, minus officiis adipisci excepturi culpa deserunt laudantium delectus ut blanditiis temporibus. Praesentium sint, fugit eum consectetur, velit rem earum explicabo ipsa, porro est eveniet laudantium. Beatae commodi minima porro perspiciatis ea dolorum, omnis voluptatum blanditiis, exercitationem adipisci iste. Ea autem fugiat distinctio fuga id excepturi iure sed, dolorem omnis velit totam. Enim, corporis!</p>
-            </div>
+        <div className="w-full">
+            <h1 className={`mb-3 font-bold ${lusitana.className} text-xl md:text-3xl`}> Customers </h1>
+
+            <Search placeholder="Search customers..." />
+
+            {/* Table Customers */}
+            <CustomersTable customers={customers} />
         </div>
     );
 }

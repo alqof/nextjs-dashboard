@@ -1,3 +1,4 @@
+import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { lusitana } from '@/app/ui/fonts';
 import Search from '@/app/ui/search';
@@ -7,12 +8,16 @@ import { CreateInvoice } from '@/app/ui/invoices/buttons';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
 import { fetchInvoicesPages } from '@/app/lib/data';
  
-export default async function Page(props: {searchParams?: Promise<{query?: string; page?: string}>}){
+
+export const metadata: Metadata = {
+    title: 'Acme Dashboard | Invoices',
+};
+  
+export default async function Page(props: { searchParams?: Promise<{query?: string; page?: string}> }){
     const searchParams = await props.searchParams;
     const query = searchParams?.query || '';
     const currentPage = Number(searchParams?.page) || 1;
     const totalPages = await fetchInvoicesPages(query);
-
 
     return (
         <div className="w-full">
