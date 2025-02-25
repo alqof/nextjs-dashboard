@@ -46,11 +46,11 @@ export default async function CustomersTable({customers}: {customers: FormattedS
             <table className="hidden min-w-full rounded-md text-gray-900 md:table">
               <thead className="rounded-md bg-gray-50 text-left text-sm font-normal">
                 <tr>
-                  <th scope="col" className="px-4 py-5 font-medium sm:pl-6"> Name </th>
-                  <th scope="col" className="px-3 py-5 font-medium"> Email </th>
-                  <th scope="col" className="px-3 py-5 font-medium"> Total Invoices </th>
-                  <th scope="col" className="px-3 py-5 font-medium"> Total Pending </th>
-                  <th scope="col" className="px-4 py-5 font-medium"> Total Paid </th>
+                  <th scope="col" className="px-4 py-5 font-bold sm:pl-6"> Name </th>
+                  <th scope="col" className="px-3 py-5 font-bold"> Email </th>
+                  <th scope="col" className="px-3 py-5 font-bold"> Total Invoices </th>
+                  <th scope="col" className="px-3 py-5 font-bold"> Total Pending </th>
+                  <th scope="col" className="px-4 py-5 font-bold"> Total Paid </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 text-gray-900">
@@ -64,8 +64,8 @@ export default async function CustomersTable({customers}: {customers: FormattedS
                     </td>
                     <td className="whitespace-nowrap bg-white px-4 py-5 text-sm"> {customer.email} </td>
                     <td className="whitespace-nowrap bg-white px-4 py-5 text-sm"> {customer.total_invoices} </td>
-                    <td className="whitespace-nowrap bg-white px-4 py-5 text-sm"> {customer.total_pending} </td>
-                    <td className="whitespace-nowrap bg-white px-4 py-5 text-sm group-first-of-type:rounded-md group-last-of-type:rounded-md"> {customer.total_paid} </td>
+                    <td className="whitespace-nowrap bg-white px-4 py-5 text-sm text-red-600"> {customer.total_pending} </td>
+                    <td className="whitespace-nowrap bg-white px-4 py-5 text-sm text-green-600 group-first-of-type:rounded-md group-last-of-type:rounded-md"> {customer.total_paid} </td>
                   </tr>
                 ))}
               </tbody>

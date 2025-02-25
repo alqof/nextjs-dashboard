@@ -41,11 +41,11 @@ export default async function InvoicesTable({query, currentPage}: {query: string
           <table className="hidden min-w-full text-gray-900 md:table">
             <thead className="rounded-lg text-left text-sm font-normal">
               <tr>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6"> Customer </th>
-                <th scope="col" className="px-3 py-5 font-medium"> Email </th>
-                <th scope="col" className="px-3 py-5 font-medium"> Amount </th>
-                <th scope="col" className="px-3 py-5 font-medium"> Date </th>
-                <th scope="col" className="px-3 py-5 font-medium"> Status </th>
+                <th scope="col" className="px-4 py-5 font-bold sm:pl-6"> Customer </th>
+                <th scope="col" className="px-3 py-5 font-bold"> Email </th>
+                <th scope="col" className="px-3 py-5 font-bold"> Amount </th>
+                <th scope="col" className="px-3 py-5 font-bold"> Date </th>
+                <th scope="col" className="px-3 py-5 font-bold"> Status </th>
                 <th scope="col" className="relative py-3 pl-6 pr-3"> <span className="sr-only">Edit</span> </th>
               </tr>
             </thead>
