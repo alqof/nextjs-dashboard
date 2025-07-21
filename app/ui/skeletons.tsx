@@ -1,6 +1,10 @@
 // Loading animation
 const shimmer = 'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
 
+
+// ==================================================================
+// DASHBOARD
+// ==================================================================
 export default function DashboardSkeleton() {
   return (
     <>
@@ -20,8 +24,6 @@ export default function DashboardSkeleton() {
     </>
   );
 }
-
-
 
 export function CardSkeleton() {
   return (
@@ -49,8 +51,6 @@ export function WrapCardSkeleton() {
   );
 }
 
-
-
 export function RevenueChartSkeleton() {
   return (
     <div className={`${shimmer} relative w-full overflow-hidden md:col-span-4`}>
@@ -70,6 +70,9 @@ export function RevenueChartSkeleton() {
 
 
 
+// ==================================================================
+// INVOICES
+// ==================================================================
 export function InvoiceSkeleton() {
   return (
     <div className="flex flex-row items-center justify-between border-b border-gray-100 py-4">
@@ -109,8 +112,6 @@ export function LatestInvoicesSkeleton() {
     </div>
   );
 }
-
-
 
 export function InvoicesTableSkeleton() {
   return (
@@ -226,3 +227,9 @@ export function TableRowSkeleton() {
     </tr>
   );
 }
+
+
+
+// ==================================================================
+// CUSTOMERS
+// ==================================================================
