@@ -1,8 +1,9 @@
 import { Metadata } from 'next';
 import { lusitana } from '@/app/ui/fonts';
-// import Search from '@/app/ui/search';
+import Search from '@/app/ui/search';
 import CustomersTable from '@/app/ui/customers/table';
 import { fetchSummaryCustomers } from '@/app/lib/data';
+import { BtnCreateCustomer } from '@/app/ui/customers/button-crud';
 
 
 export const metadata: Metadata = {
@@ -19,6 +20,11 @@ export default async function Page(){
             {/* <div className="flex items-center justify-between gap-2 mt-4 md:mt-8">
                 <Search placeholder="Search customers..." />
             </div> */}
+            <div className="flex items-center justify-between gap-2 mt-4 md:mt-8">
+                <Search placeholder="Search customers..." />
+                <BtnCreateCustomer />
+            </div>
+            
             <CustomersTable customers={customers} />
         </div>
     );

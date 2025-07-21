@@ -1,16 +1,21 @@
 'use server';
 
-import { z } from 'zod';
 import postgres from 'postgres';
+import { z } from 'zod';
+import { v4 as uuidv4, validate } from 'uuid';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
+import { error } from 'console';
 
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
-const FormSchema = z.object({
+
+// =============================================================================================
+// Invoices
+// =============================================================================================
+const invoiceSchemaValidation = z.object({
   // ===> default
   // id: z.string(),
   // customerId: z.string(),
@@ -32,11 +37,9 @@ const FormSchema = z.object({
   date: z.string(),
 });
 
+const CreateInvoice = invoiceSchemaValidation.omit({id: true, date: true});
 
-
-// =============================================================================================
-// =============================================================================================
-export type State = {
+export type StateInvoice = {
   errors?: {
     customerId?: string[];
     amount?: string[];
@@ -45,9 +48,8 @@ export type State = {
   message?: string | null;
 };
 
-const CreateInvoice = FormSchema.omit({ id: true, date: true });
-export async function createInvoice(prevState: State, formData: FormData){
-  console.log(formData);
+export async function createInvoice(prevState: StateInvoice, formData: FormData){
+  // console.log(formData);
   // Validate form fields using Zod
   const validatedFields = CreateInvoice.safeParse({
       customerId: formData.get('customerId'),
@@ -72,7 +74,7 @@ export async function createInvoice(prevState: State, formData: FormData){
       VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
     `;
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     return {
       message: 'Database Error: Failed to Create Invoice.',
     };
@@ -124,8 +126,8 @@ export async function createInvoice(prevState: State, formData: FormData){
 
 
 // Use Zod to update the expected types
-const UpdateInvoice = FormSchema.omit({ id: true, date: true });
-export async function updateInvoice(id: string, prevState: State, formData: FormData){
+const UpdateInvoice = invoiceSchemaValidation.omit({ id: true, date: true });
+export async function updateInvoice(id: string, prevState: StateInvoice, formData: FormData){
   const validatedFields = UpdateInvoice.safeParse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
@@ -195,6 +197,138 @@ export async function deleteInvoice(id: string) {
 
 
 
+// =============================================================================================
+// Customers
+// =============================================================================================
+const MAX_SIZE = 1024 * 1024; // 1MB
+const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png"];
+
+const customerSchemaValidation = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1, { message: 'Customer name cannot be empty' }),
+  email: z.string().email({ message: 'Invalid email'}),
+  image_url: z.instanceof(File).optional()
+  // image_url: z.instanceof(File)
+  //   .refine((file) => file.size <= MAX_SIZE, { message: "Max size 1MB!" })
+  //   .refine((file) => ALLOWED_TYPES.includes(file.type), { message: "Image format png, jpg, jpeg only!" })
+  //   .optional()
+  //   .nullable()
+});
+
+const CreateCustomer = customerSchemaValidation.omit({ id: true })
+
+export type StateCustomer = {
+  errors?: {
+    name?: string[];
+    email?: string[];
+    image_url?: string[];
+  };
+  message?: string | null;
+};
+
+export async function createCustomer(prevState: StateCustomer, formData: FormData) {
+  const validatedFields = CreateCustomer.safeParse({
+    name: formData.get('name'),
+    email: formData.get('email'),
+    image_url: formData.get('image_url'),
+  });
+  // console.log(validatedFields)
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Create Customer.',
+    };
+  }
+
+  const {name, email, image_url} = validatedFields.data;
+
+  let image_url_set = '/customers/default.png';
+  if (
+    image_url &&
+      typeof image_url==='object' && 'name' in image_url &&
+    image_url.name &&
+      'size' in image_url && image_url.size > 0
+  ) {
+    let ext = 'png';
+    if (image_url.type) {
+      if (image_url.type === 'image/jpeg' || image_url.type === 'image/jpg') ext = 'jpg';
+      if (image_url.type === 'image/png') ext = 'png';
+    } else if (image_url.name) {
+      const match = image_url.name.match(/\.([a-zA-Z0-9]+)$/);
+      if (match) ext = match[1];
+    }
+    image_url_set = `/customers/${name}.${ext}`;
+  }
+  // console.log(name, email, image_url_set)
+
+  // Save uploaded image file if present
+  if (
+    image_url &&
+    typeof image_url==='object' &&
+    'arrayBuffer' in image_url &&
+    image_url.size > 0
+  ) {
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    const buffer = Buffer.from(await image_url.arrayBuffer());
+
+    // Remove leading slash from image_url for path.join
+    const filePath = path.join(process.cwd(), 'public', image_url_set.startsWith('/') ? image_url_set.slice(1) : image_url_set);
+
+    // Ensure directory exists
+    await fs.mkdir(path.dirname(filePath), { recursive: true });
+    await fs.writeFile(filePath, buffer);
+  }
+
+  // Data to be used (DB insert)
+  // const data = {
+  //   name: validatedFields.data.name,
+  //   email: validatedFields.data.email,
+  //   image_url,
+  // };
+  // console.log(data);
+
+  const existing = await sql`
+    SELECT 
+      id
+    FROM
+      customers
+    WHERE
+      email = ${email}
+  `;
+  if(existing.length > 0){
+    return{
+      errors: { email: ['Email already exists.']},
+      message: 'Email must be unique.'
+    }
+  }
+
+  try {
+    await sql`
+      INSERT INTO customers (name, email, image_url)
+      VALUES (${name}, ${email}, ${image_url_set})
+    `;
+  } catch (error) {
+    return {
+      errors: {},
+      message: 'Database Error: Failed to Create Invoice.',
+    };
+  }
+  
+  revalidatePath('/dashboard/customers');
+  redirect('/dashboard/customers');
+  // return {
+  //   errors: {},
+  //   message: 'Customer created successfully.',
+  // };
+}
+
+
+
+
+// =============================================================================================
+// Auth
+// =============================================================================================
 export async function authenticate(prevState: string | undefined, formData: FormData){
   try {
     await signIn('credentials', formData);

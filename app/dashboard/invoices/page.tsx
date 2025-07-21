@@ -4,7 +4,7 @@ import { lusitana } from '@/app/ui/fonts';
 import Search from '@/app/ui/search';
 import Table from '@/app/ui/invoices/table';
 import Pagination from '@/app/ui/invoices/pagination';
-import { CreateInvoice } from '@/app/ui/invoices/buttons';
+import { BtnCreateInvoice } from '@/app/ui/invoices/button-crud';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
 import { fetchInvoicesPages } from '@/app/lib/data';
  
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     title: 'Acme Dashboard | Invoices',
 };
   
-export default async function Page(props: { searchParams?: Promise<{query?: string; page?: string}> }){
+export default async function Page(props: {searchParams?: Promise<{query?:string; page?:string}>}){
     const searchParams = await props.searchParams;
     const query = searchParams?.query || '';
     const currentPage = Number(searchParams?.page) || 1;
@@ -25,7 +25,7 @@ export default async function Page(props: { searchParams?: Promise<{query?: stri
 
             <div className="flex items-center justify-between gap-2 mt-4 md:mt-8">
                 <Search placeholder="Search invoices..." />
-                <CreateInvoice />
+                <BtnCreateInvoice />
             </div>
 
             <Suspense key={query+currentPage} fallback={<InvoicesTableSkeleton />}>

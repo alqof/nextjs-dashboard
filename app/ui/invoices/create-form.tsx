@@ -5,17 +5,17 @@ import { useActionState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 import { CustomerField } from '@/app/lib/definitions';
-import { createInvoice, State } from '@/app/lib/actions';
+import { createInvoice, StateInvoice } from '@/app/lib/actions';
 
 
-export default function Form({ customers }: { customers: CustomerField[] }){
-  const initialState: State = {message: null, errors: {}};
+export default function FormCreate({customers}: {customers: CustomerField[]}){
+  const initialState: StateInvoice = {message: null, errors: {}};
   const [state, formAction] = useActionState(createInvoice, initialState);
 
   return (
     <form action={formAction}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
-        {/* Customer Name */}
+        {/* chose customer */}
         <div className="mb-4">
           <label htmlFor="customer" className="mb-2 block text-sm font-medium"> Choose customer </label>
           <div className="relative">
@@ -25,7 +25,7 @@ export default function Form({ customers }: { customers: CustomerField[] }){
               name="customerId"
               defaultValue=""
               aria-describedby="customer-error"
-              // required
+              // required | tidak perlu karena menggunakan zod validation
             >
               <option value="" disabled> Select a customer </option>
               {customers.map((customer) => (
@@ -37,14 +37,12 @@ export default function Form({ customers }: { customers: CustomerField[] }){
 
           <div id="customer-error" aria-live="polite" aria-atomic="true">
             {state.errors?.customerId && state.errors.customerId.map((error: string) => (
-              <p className="mt-2 text-sm text-red-500" key={error}>
-                {error}
-              </p>
+              <p className="mt-2 text-sm text-red-500" key={error}> {error} </p>
             ))}
           </div>
         </div>
 
-        {/* Invoice Amount */}
+        {/* input amount */}
         <div className="mb-4">
           <label htmlFor="amount" className="mb-2 block text-sm font-medium"> Choose an amount </label>
           <div className="relative mt-2 rounded-md">
@@ -72,7 +70,7 @@ export default function Form({ customers }: { customers: CustomerField[] }){
           </div>
         </div>
 
-        {/* Invoice Status */}
+        {/* input invoice Status */}
         <fieldset>
           <legend className="mb-2 block text-sm font-medium"> Set the invoice status </legend>
           <div className="rounded-md border border-gray-200 bg-white px-[14px] py-3">

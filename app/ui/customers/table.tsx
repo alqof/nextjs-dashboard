@@ -2,11 +2,6 @@ import Image from 'next/image';
 import { FormattedSummaryCustomersTable } from '@/app/lib/definitions';
 
 export default async function CustomersTable({customers}: {customers: FormattedSummaryCustomersTable[]}){
-  // if (!customers || customers.length === 0) {
-  //   console.log(customers)
-  //   // return <p>Data pelanggan tidak tersedia.</p>;
-  // }
-
   return (
     <div className="mt-6 flow-root">
       <div className="overflow-x-auto">
@@ -20,7 +15,7 @@ export default async function CustomersTable({customers}: {customers: FormattedS
                       <div className="mb-2 flex items-center">
                         <div className="flex items-center gap-3">
                           <Image src={customer.image_url} className="rounded-full" alt={`${customer.name}'s profile picture`} width={28} height={28} />
-                          <p> {customer.name} </p>
+                          <p className="capitalize"> {customer.name} </p>
                         </div>
                       </div>
                       <p className="text-sm text-gray-500"> {customer.email}</p>
@@ -59,7 +54,7 @@ export default async function CustomersTable({customers}: {customers: FormattedS
                     <td className="whitespace-nowrap bg-white py-5 pl-4 pr-3 text-sm text-black group-first-of-type:rounded-md group-last-of-type:rounded-md sm:pl-6">
                       <div className="flex items-center gap-3">
                         <Image src={customer.image_url} className="rounded-full" alt={`${customer.name}'s profile picture`} width={28} height={28} />
-                        <p> {customer.name} </p>
+                        <p className="capitalize"> {customer.name} </p>
                       </div>
                     </td>
                     <td className="whitespace-nowrap bg-white px-4 py-5 text-sm"> {customer.email} </td>
